@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================= -->
+<!-- Base                                          -->
+<!-- ============================================= -->
+<!-- $Header: /cvs/adempiere/base/build.xml,v 1.1 2006/04/21 17:41:36 jjanke Exp $ -->
+
+<project name="easyshipment" default="copy" basedir=".">
+	<property file="folder.properties"/>
+
+
+
+	<!-- plugins that serialize ohn classes have to be put in the classpath -->
+	<path id="classpath">
+	        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+	 </path>
+
+	  <target name="copy" description="copy resource files">
+	  	<mkdir dir="${user.home}/${es.dir}" />
+	  	<copy todir="${user.home}/${es.dir}">
+	  	      <fileset dir="${res}">	  	  
+	  	        <include name="**/*.*"/>
+	  	        <exclude name="**/package.html"/>
+	  	        <exclude name="**/*.class"/>
+	  	      </fileset>
+	  	    </copy>
+	  </target>
+
+	<target name="compile">
+		<mkdir dir="${cls}" />
+		<javac srcdir="${src}" destdir="${cls}" encoding="UTF-8" classpathref="classpath" debug="on" />
+	</target>
+	
+	<target name="jar" depends="compile">
+		<!-- jDownloader -->
+		<manifest file="Manifest.MF">
+			<attribute name="Created-By" value="Massimo Biancalani" />
+			<attribute name="Main-Class" value="com.biancama.Main" />
+			<attribute name="Class-Path" value="${classpath}" />
+		</manifest>
+		<mkdir dir="${dist}" />
+		<jar jarfile="${dist}/EasyShipment.jar" manifest="Manifest.MF">
+			<fileset dir="${cls}">
+				<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="${src}">
+				<include name="**/*.java"/>
+				<include name="**/*.xml"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="run" depends="copy, jar">
+	        <java fork="true" classname="com.biancama.Main" args="-Xmx512m">
+	            <classpath>
+	                <path refid="classpath"/>            	
+	                <path location="${dist}/EasyShipment.jar"/>
+	            	<path location="${user.home}/${es.dir}"/>
+	            </classpath>
+	        </java>
+	    </target>
+
+	<target name="simplerun" depends="copy">
+	        <java fork="true" classname="com.biancama.Main">
+	            <arg value="-Xmx512m"/>
+	        	<classpath>
+	        		<path location="${user.home}/${es.dir}"/>	        
+	                <path refid="classpath"/>            	
+	                <path location="${dist}/EasyShipment.jar"/>	            			
+	            </classpath>
+	        </java>
+	    </target>
+
+</project>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shipment_subreport1" language="groovy" pageWidth="595" pageHeight="22" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9a19d979-0adb-47ed-a44b-794fc8dfb5c6">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="shipmentId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select io.line line, p.name product, coalesce (io.movementqty, 0)  quantity, u.uomsymbol um, coalesce(a.value, '') lot, coalesce (ol.priceentered, 0) price
+  from M_inoutline io
+  inner join c_orderline ol on (ol.c_orderline_id = io.c_orderline_id)
+  inner join m_product p on (p.m_product_id = io.m_product_id)
+  inner join c_uom u on (u.c_uom_id = p.c_uom_id)
+  left join m_attributeinstance a on (a.m_attributesetinstance_id = io.m_attributesetinstance_id)
+  where io.m_inout_id = $P{shipmentId}]]>
+	</queryString>
+	<field name="line" class="java.math.BigDecimal"/>
+	<field name="product" class="java.lang.String"/>
+	<field name="quantity" class="java.math.BigDecimal"/>
+	<field name="um" class="java.lang.String"/>
+	<field name="lot" class="java.lang.String"/>
+	<field name="price" class="java.math.BigDecimal"/>
+	<sortField name="line"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement uuid="0a24c444-b5a6-45b0-a7ab-38ad8a1b7284" x="1" y="1" width="50" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{line}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2c775c76-0bb6-4769-9831-a943fc6e9b3a" x="50" y="1" width="255" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{product}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="95f3c202-d95d-4480-b619-1729db580587" x="227" y="1" width="57" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="06525af1-c546-44f9-80ea-02c39423fa1d" x="282" y="1" width="38" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{um}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="fe508ef5-c41b-4754-82df-5e19e4038190" x="346" y="1" width="42" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{lot}]]></textFieldExpression>
+			</textField>
+			<textField pattern="€ #,##0.00">
+				<reportElement uuid="7801a097-9a7b-4b82-ac70-7e2dbfb816e2" x="444" y="1" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

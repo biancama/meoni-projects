@@ -1,0 +1,4 @@
+# File Lettura ; Prefisso ; T1 min ; T2 max
+/home/massimo/projects/c/ReadTemperatures/dl11018.txt;Cella3;-10.0;20.0
+/home/massimo/projects/c/ReadTemperatures/dl11028.txt;Cella2;-10.0;20.0
+

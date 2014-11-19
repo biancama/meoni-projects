@@ -1,0 +1,6 @@
+#parameter File
+#Each lines is a parameter
+#  dataFileName;roomName;R (No overwrite) W (overwrite);minTemp;maxTemp;
+/home/massimo/workspaceC/ReadTemperature/dl11030.txt;stanza1;W;-30;-18;
+/home/massimo/workspaceC/ReadTemperature/dl11028.txt;stanza2;W;-20;6;
+/home/massimo/workspaceC/ReadTemperature/dl11018.txt;stanza3;W;-20;6;

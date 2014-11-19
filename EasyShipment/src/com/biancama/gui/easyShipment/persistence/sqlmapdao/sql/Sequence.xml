@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sequence">
+
+  <typeAlias alias="sequence" type="com.biancama.gui.easyShipment.model.Sequence"/>
+
+
+  <resultMap id="sequenceResult" class="sequence">
+    <result property="id" column="AD_Sequence_ID"/>
+    <result property="currentValue" column="CurrentNext"/>    
+    <result property="incrementNumber" column="IncrementNo"/>
+  </resultMap>
+
+  <select id="getSequence" resultClass="sequence" parameterClass="sequence" resultMap="sequenceResult">
+   SELECT CurrentNext, IncrementNo, AD_Sequence_ID 
+   FROM AD_Sequence 
+   WHERE Name=#tableName#
+   AND IsActive='Y' AND IsTableID='Y' AND IsAutoSequence='Y' 
+   FOR UPDATE OF AD_Sequence
+  </select>
+
+  <update id="updateSequence" parameterClass="sequence" >
+    UPDATE AD_Sequence 
+    SET CurrentNext = CurrentNext + #incrementNumber#
+    WHERE AD_Sequence_ID = #id#
+  </update>
+  	<select id="getSequenceIdForDoc" resultClass="integer" parameterClass="sequence" >
+	select dt.docnosequence_id
+	from C_doctype dt
+	where dt.name = #docName#
+	and dt.ad_client_id = #clientId#
+	</select>
+  	<select id="getSequenceStartNewYear" resultClass="String" parameterClass="integer" >
+	SELECT StartNewYear 
+	FROM AD_Sequence
+    WHERE AD_Sequence_ID =#id#  
+    AND IsActive = 'Y' 
+    AND IsTableID = 'N' AND IsAutoSequence='Y'
+	</select>
+	
+  <select id="getDocNoNextYear" resultClass="sequence" parameterClass="sequence" resultMap="sequenceResult" >
+   SELECT y.CurrentNext as CurrentNext, s.IncrementNo as IncrementNo, s.AD_Sequence_ID as AD_Sequence_ID
+   FROM AD_Sequence_No y, AD_Sequence s 
+   WHERE y.AD_Sequence_ID = s.AD_Sequence_ID 						
+   AND s.AD_Sequence_ID = #id#
+   AND s.AD_Client_ID = #clientId#
+   AND y.CalendarYear = #year#
+   AND s.IsActive='Y' AND s.IsTableID='N' AND s.IsAutoSequence='Y'
+   ORDER BY s.AD_Client_ID DESC
+   FOR UPDATE OF y
+  </select>
+  <select id="getDocNoNoNextYear" resultClass="sequence" parameterClass="sequence" resultMap="sequenceResult">
+    SELECT CurrentNext,  IncrementNo,  AD_Client_ID, AD_Sequence_ID
+	FROM AD_Sequence
+	WHERE AD_Sequence_ID = #id#
+	AND IsActive='Y' AND IsTableID='N' AND IsAutoSequence='Y'
+	FOR UPDATE OF AD_Sequence
+  </select>
+  <update id="updateDocNoNextYear" parameterClass="sequence">
+  UPDATE AD_Sequence_No 
+    SET CurrentNext = CurrentNext + (select s.incrementNo from  AD_Sequence s where s.ad_sequence_id = #id#)
+    WHERE AD_Sequence_ID = #id#
+    AND CalendarYear = #year#
+    and EXISTS (select 1 from  AD_Sequence s where s.ad_sequence_id = #id#)    
+  </update>
+  <update id="updateDocNoNoNextYear" parameterClass="sequence" >
+    UPDATE AD_Sequence 
+    SET CurrentNext = CurrentNext + incrementno  
+    WHERE AD_Sequence_ID = #id#
+  </update>
+  <select id="getStartNewYear" resultClass="string" parameterClass="sequence" >
+	SELECT StartNewYear
+	FROM AD_Sequence	
+	WHERE AD_Sequence_ID =#id#
+    AND IsActive = 'Y' AND IsTableID = 'N' AND IsAutoSequence='Y'
+    </select>
+    
+</sqlMap>

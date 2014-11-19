@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Order">
+
+  <typeAlias alias="order" type="com.biancama.gui.easyShipment.model.Order"/>
+
+
+  <resultMap id="orderResult" class="order">
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="id" column="c_order_id"/>
+    <result property="documentNo" column="documentno"/>
+    <result property="salesRep" column="salesrep_id"/>
+    <result property="bpartnerId" column="c_bpartner_id"/>
+    <result property="bpartnerLocationId" column="c_bpartner_location_id"/>
+    <result property="currencyId" column="c_currency_id"/>
+    <result property="paymentTermId" column="c_paymentterm_id"/>
+    <result property="invoiceRule" column="invoicerule"/>
+    <result property="deliveryRule" column="deliveryrule"/>
+    <result property="deliveryViaRule" column="deliveryviarule"/>
+    <result property="warehouseId" column="m_warehouse_id"/>
+    <result property="pricelistId" column="m_pricelist_id"/>
+    <result property="billBPartnerId" column="bill_bpartner_id"/>
+    <result property="billLocationId" column="bill_location_id"/>
+    <result property="billUserId" column="bill_user_id"/>
+    <result property="payBPartnerId" column="pay_bpartner_id"/>
+    <result property="payLocationId" column="pay_location_id"/>
+    <result property="dateordered" column="dateordered"/>
+    
+  </resultMap>
+	<select id="getOrder" parameterClass="integer" resultClass="order">
+	select c_order_id id, salesrep_id salesRep, c_bpartner_id  bpartnerId, c_bpartner_location_id bpartnerLocationId,
+ 	c_currency_id currencyId, c_paymentterm_id paymentTermId,invoicerule invoiceRule, deliveryrule deliveryRule,
+	deliveryviarule deliveryViaRule,m_warehouse_id warehouseId,m_pricelist_id pricelistId,
+ 	bill_bpartner_id billBPartnerId,bill_location_id billLocationId,bill_user_id billUserId, pay_bpartner_id payBPartnerId,
+ 	pay_location_id payLocationId, dateordered dateordered
+ 	from c_order
+	where c_order_id =#id#
+	</select>
+
+ <insert id="insertOrder" parameterClass="order">
+ 	INSERT INTO C_order (c_order_id,ad_client_id,ad_org_id,isactive,
+ 	created,createdby,updated,updatedby,issotrx,documentno,docstatus,
+ 	docaction,processing,processed,c_doctype_id,c_doctypetarget_id,
+ 	description,isapproved,iscreditapproved,isdelivered,isinvoiced,
+ 	isprinted,istransferred,isselected,
+ 	salesrep_id,dateordered,datepromised,dateprinted,dateacct,
+ 	c_bpartner_id,c_bpartner_location_id,
+ 	poreference,isdiscountprinted,c_currency_id,paymentrule,
+ 	c_paymentterm_id,invoicerule,deliveryrule,freightcostrule,
+ 	freightamt,deliveryviarule,m_shipper_id,c_charge_id,chargeamt,
+ 	priorityrule,totallines,grandtotal,m_warehouse_id,m_pricelist_id,
+ 	istaxincluded,c_campaign_id,c_project_id,c_activity_id,posted,
+ 	c_payment_id,c_cashline_id,sendemail,ad_user_id,copyfrom,
+ 	isselfservice,ad_orgtrx_id,user1_id,user2_id,c_conversiontype_id,
+ 	bill_bpartner_id,bill_location_id,bill_user_id,pay_bpartner_id,
+ 	pay_location_id,ref_order_id,isdropship,volume,weight,ordertype,
+ 	c_pos_id,amounttendered,amountrefunded,link_order_id) 
+ 	VALUES (#id#,#clientId#,#orgId#,'Y',
+ 	current_timestamp,1000000,current_timestamp,1000000,'Y',#documentNo#,'DR',
+ 	'PR','N','N',0,1000028,
+ 	'Inserito Automatico','N','N','N','N',
+ 	'N','N','N',
+ 	#salesRep#,#dateordered#,#dateordered#,null,current_date,
+ 	#bpartnerId# ,#bpartnerLocationId#,
+ 	null,'N',#currencyId#,'P',
+ 	#paymentTermId#,#invoiceRule#,#deliveryRule#,'I',
+ 	0,#deliveryViaRule#,null,null,0,
+ 	'5',0,0,#warehouseId#,#pricelistId#,
+ 	'N',null,null,null,'N',
+ 	null,null,'N',null,null,
+ 	'N',null,null,null,null,
+ 	#billBPartnerId#,#billLocationId#,#billUserId#,#payBPartnerId#,
+ 	#payLocationId#,null,'N',null,null,null,
+ 	null,null,null,null)
+ </insert>
+ 
+ <select id="getDefaultPaymentTerm" parameterClass="order" resultClass="integer">
+ 	select pt.c_paymentTerm_id
+	from c_paymentTerm pt
+	where pt.ad_client_id = #clientId#
+	and pt.isactive ='Y'
+	and pt.isvalid ='Y'
+	and pt.isdefault='Y'
+ </select>
+ 
+ <update id="updateGrandTotal" parameterClass="order">
+ 	update c_order 
+	set grandtotal = #grandTotal#,
+	totallines = #totalLines#
+	where c_order_id = #id#
+ </update>
+ 
+ <update id="updateOrder" parameterClass="order">
+  	UPDATE C_order set updated = current_timestamp,
+ 	salesrep_id = #salesRep#,
+ 	c_bpartner_id = #bpartnerId#, c_bpartner_location_id = #bpartnerLocationId#,
+ 	c_currency_id = #currencyId#,
+ 	c_paymentterm_id = #paymentTermId#,invoicerule=#invoiceRule#,deliveryrule=#deliveryRule#,
+	deliveryviarule =#deliveryViaRule#,m_warehouse_id =#warehouseId#,m_pricelist_id =#pricelistId#,
+ 	bill_bpartner_id =#billBPartnerId#,bill_location_id=#billLocationId#,bill_user_id= #billUserId#,
+	pay_bpartner_id=#payBPartnerId#,
+ 	pay_location_id=#payLocationId#, dateordered = #dateordered#
+	where c_order_id =#id#
+</update>
+
+ <update id="completeOrder" parameterClass="integer">
+  	UPDATE C_order set updated = current_timestamp,
+ 	docstatus = 'CO',
+ 	docaction = 'CL',
+ 	c_doctype_id = 1000028,
+ 	processed = 'Y',
+ 	isapproved = 'Y'
+	where c_order_id =#id#
+</update>
+</sqlMap>

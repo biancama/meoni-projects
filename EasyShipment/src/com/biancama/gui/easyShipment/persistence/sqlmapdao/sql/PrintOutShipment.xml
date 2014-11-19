@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PrintOutShipment">
+
+  <typeAlias alias="printOutShipment" type="com.biancama.gui.easyShipment.model.PrintOutShipment"/>
+  <typeAlias alias="printOutShipmentLine" type="com.biancama.gui.easyShipment.model.PrintOutShipmentLine"/>
+
+
+
+	<select id="getPrintOutShipment" parameterClass="integer" resultClass="printOutShipment">
+	select io.m_inout_id as id, io.documentno as documentNo, to_char(io.dateordered, 'DD/MM/YYYY') as date, io.description as note, bp.name as company, bpl.name as address, sh.name as shipper, io.itemno as itemNo
+	from m_inout io
+	inner join c_bpartner bp on (io.c_bpartner_id = bp.c_bpartner_id)
+	inner join c_bpartner_location bpl on (io.c_bpartner_location_id = bpl.c_bpartner_location_id)
+	left join c_bpartner sh on (io.shipper_id = sh.c_bpartner_id)	
+	where m_inout_id =#id#
+	</select>
+	<select id="getPrintOutShipmentLine" parameterClass="integer" resultClass="printOutShipmentLine">
+	select sl.M_inoutline_id as id, sl.movementqty as qty, u.uomsymbol as uom, p.name as productName, ai.value as lot
+	from M_inoutline sl
+	inner join m_attributeinstance ai on (ai.m_attributesetinstance_id = sl.m_attributesetinstance_id)
+	inner join m_product p on (p.m_product_id = sl.m_product_id)
+	inner join c_uom u on (u.c_uom_id = p.c_uom_id)
+	where sl.m_inout_id = #shipmentId#
+	</select>
+
+</sqlMap>

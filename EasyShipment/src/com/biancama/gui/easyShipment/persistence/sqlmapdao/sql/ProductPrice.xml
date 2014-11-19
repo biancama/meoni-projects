@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PriceList">
+
+  <typeAlias alias="productPrice" type="com.biancama.gui.easyShipment.model.ProductPrice"/>
+
+
+
+  <resultMap id="productPriceResult" class="productPrice">
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="priceListVersionId" column="m_pricelist_version_id"/>
+    <result property="productId" column="m_product_id"/>
+    <result property="pricelist" column="pricelist"/>
+    <result property="pricestd" column="pricestd"/>
+    <result property="pricelimit" column="pricelimit"/>
+    
+    
+  </resultMap>
+<!-- 	
+ <insert id="insertProductPrice" parameterClass="productPrice">
+ 	INSERT INTO m_productprice (m_pricelist_version_id, m_product_id, ad_client_id, ad_org_id,isactive,
+ 									 created,createdby,updated,updatedby,
+ 	                                 pricelist, pricestd, pricelimit) 
+ 	VALUES (#priceListVersionId#, #m_product_id#, #clientId#,#orgId#,'Y',
+ 	current_timestamp,100,current_timestamp,100,
+ 	#pricelist#,#pricestd#,#pricelimit#)
+ </insert>
+  -->
+ 	<select id="getProductPrice" parameterClass="java.util.Map" resultClass="java.math.BigDecimal">
+    	select pricelist
+		from m_productprice pp
+		inner join m_product p on (p.m_product_id = pp.m_product_id)
+		where  p.name = #productName#
+		and m_pricelist_version_id =  #priceVersionId#
+		and pp.isactive = 'Y'
+		and p.isactive = 'Y'
+		and pp.ad_client_id = 1000000
+		and pp.ad_org_id = 1000000
+    </select>
+
+</sqlMap>

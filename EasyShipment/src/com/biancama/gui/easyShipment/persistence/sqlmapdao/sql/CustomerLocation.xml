@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CustomerLocation">
+
+  <typeAlias alias="customerLocation" type="com.biancama.gui.easyShipment.model.CustomerLocation"/>
+
+  <cacheModel id="customerLocationCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="customerLocationResult" class="customerLocation">
+    <result property="id" column="c_bpartner_location_id"/>
+    <result property="customerId" column="c_bpartner_id"/>
+    <result property="isShipAddress" column="isshipto"/>
+    <result property="fullAddress" column="full_address"/>
+    <result property="customer" column="customer"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+  </resultMap>
+
+
+  <select id="getCustomerLocationList" resultClass="String" cacheModel="customerLocationCache">
+    select coalesce(l.address1, '') || ' ' || coalesce(l.postal, '') || ' ' || coalesce(l.city, '') as fulladdress
+	from C_bpartner_location bl
+	inner join c_location l on (l.c_location_id = bl.c_location_id)  
+	inner join c_bpartner bp on (bp.c_bpartner_id = bl.c_bpartner_id)
+	where bl.c_bpartner_location_id = #id#
+	and bl.ad_client_id = #clientId#
+	and bl.isactive ='Y'
+	and bl.isshipto ='Y'
+  </select>
+
+  <select id="getAllCustomerShipmentLocations" resultClass="customerLocation" cacheModel="customerLocationCache">
+   select bl.c_bpartner_location_id id, coalesce(l.address1, '') || ' ' || coalesce(l.postal, '') || ' ' || coalesce(l.city, '') as fulladdress
+	from C_bpartner_location bl
+	inner join c_location l on (l.c_location_id = bl.c_location_id)  
+	inner join c_bpartner bp on (bp.c_bpartner_id = bl.c_bpartner_id)
+	where bp.name =  #customer#
+	and bl.ad_client_id = #clientId#
+	and bl.isactive ='Y'
+	and bl.isshipto ='Y'
+  </select>
+
+
+</sqlMap>

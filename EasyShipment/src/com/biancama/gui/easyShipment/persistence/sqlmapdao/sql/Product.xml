@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Product">
+
+  <typeAlias alias="product" type="com.biancama.gui.easyShipment.model.Product"/>
+
+  <cacheModel id="productCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="productResult" class="product">
+    <result property="id" column="m_product_id"/>
+    <result property="name" column="name"/>
+    <result property="value" column="value"/>
+    <result property="rate" column="rate"/>
+  </resultMap>
+
+ 
+  <select id="getProductList" resultClass="product" cacheModel="productCache">
+    select p.m_product_id, p.name, p.value, max(plv.validfrom) as versionLastPriceList
+	from m_product p
+	inner join m_productPrice pp on (p.m_product_id = pp.m_product_id)
+	inner join m_pricelist_version plv on (plv.m_pricelist_version_id = pp.m_pricelist_version_id)
+	where p.ad_client_id = 1000000
+	and p.isactive = 'Y'
+	and p.issold = 'Y'
+	group by p.m_product_id, p.name, p.value
+	order by p.name
+  </select>
+
+  <select id="getProduct" resultClass="product" cacheModel="productCache" parameterClass="product">
+  	select p.m_product_id as id, p.name, p.value, p.description as description, p.c_uom_id as uomId, t.c_tax_id as taxId, t.rate as rate, p.m_locator_id as locatorId, p.m_product_category_id as categoryId
+	from m_product p
+	inner join c_tax t on (t.c_taxcategory_id = p.c_taxcategory_id)
+	where p.name = #name#
+	and t.isactive = 'Y'
+	and t.issalestax = 'Y'
+	and t.isdefault = 'Y'
+	and p.isactive = 'Y'
+	and p.ad_client_id = 1000000
+	and p.ad_org_id = 1000000
+  </select>
+  
+  <select id="getProductById" resultClass="product" cacheModel="productCache" parameterClass="integer">
+	select p.m_product_id, p.name, p.value
+	from m_product p
+	where p.m_product_id =#id#	
+	</select>
+ <select id="getLotById" resultClass="string" cacheModel="productCache" parameterClass="integer">
+		select a.value
+		from m_attributeinstance a
+	where a.m_attributesetinstance_id = #attributeInstance#
+	</select>
+	
+	
+
+</sqlMap>

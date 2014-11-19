@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PriceList">
+
+  <typeAlias alias="priceList" type="com.biancama.gui.easyShipment.model.PriceList"/>
+
+  <cacheModel id="priceListCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="priceListResult" class="priceList">
+    <result property="id" column="m_pricelist_id"/>
+    <result property="name" column="name"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="currencyId" column="c_currency_id"/>    
+    
+  </resultMap>
+
+
+  <select id="getPriceListByName" resultClass="priceList" cacheModel="priceListCache" parameterClass="string" >
+select pl.m_pricelist_id, pl.name, 
+pl.ad_client_id, pl.ad_org_id, pl.c_currency_id
+from m_pricelist pl
+where pl.name = #name# 
+and pl.ad_client_id = 1000000 and pl.ad_org_id = 1000000
+  </select>
+
+</sqlMap>

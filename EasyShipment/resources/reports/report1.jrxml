@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shipment" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="15" bottomMargin="25" uuid="d4e9e169-049f-4df1-b3e0-73f6a63f9a23">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/massimo/workspace/workspaceJava/EasyShipment/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shipmentId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select io.m_inout_id as id, io.documentno as documentNo, to_char(io.dateordered, 'DD/MM/YYYY') as date, io.description as note, bp.name as company, coalesce(l.address1,'') || ' ' || coalesce(l.postal,'') || ' ' || coalesce(l.city,'') as address,
+coalesce(l_s.address1,'') || ' ' || coalesce(l_s.postal,'') || ' ' || coalesce(l_s.city,'') as addressShip, sh.name as shipper, coalesce(cast(io.itemno as text), 'A VISTA') as itemNo, o.totallines as totalLines, o.grandtotal as grandtotal
+	from m_inout io
+	inner join c_order o on (o.c_order_id = io.c_order_id)
+	inner join c_bpartner bp on (io.c_bpartner_id = bp.c_bpartner_id)
+	left join c_bpartner_location bpl on (bp.c_bpartner_id = bpl.c_bpartner_id)
+    inner join c_location l on (l.c_location_id = bpl.c_location_id)
+    left join c_bpartner sh on (io.shipper_id = sh.c_bpartner_id)
+    left join c_bpartner_location bpl_s on (io.c_bpartner_location_id = bpl_s.c_bpartner_location_id)
+    inner join c_location l_s on (l_s.c_location_id = bpl_s.c_location_id)
+where io.m_inout_id = $P{shipmentId}
+ and bpl.isActive = 'Y' and bpl.isbillto = 'Y'
+    and bpl_s.isActive = 'Y' and bpl_s.isshipto = 'Y']]>
+	</queryString>
+	<field name="id" class="java.math.BigDecimal"/>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="date" class="java.lang.String"/>
+	<field name="note" class="java.lang.String"/>
+	<field name="company" class="java.lang.String"/>
+	<field name="address" class="java.lang.String"/>
+	<field name="addressship" class="java.lang.String"/>
+	<field name="shipper" class="java.lang.String"/>
+	<field name="itemno" class="java.lang.String"/>
+	<field name="totallines" class="java.math.BigDecimal"/>
+	<field name="grandtotal" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="291" splitType="Stretch">
+			<image>
+				<reportElement uuid="37bf2a6b-8d66-4312-8976-763ea27f7507" x="0" y="3" width="200" height="100"/>
+				<imageExpression><![CDATA["./images/MEONI.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="2dfe47b4-9a55-4ef7-b1ec-f15ec1794753" style="SubTitle" x="255" y="26" width="300" height="40"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Via Ferrucci, 5  Montale (PT)
+Tel. (0573) 55080  Fax (0573) 959386
+Cod. Fisc. e Part. I.V.A. 0045531 047 4]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="9aaa5c48-74b8-46a8-9017-32d2c4ccbaf2" x="0" y="0" width="553" height="29" isPrintWhenDetailOverflows="true"/>
+				<subreportParameter name="shipmentId">
+					<subreportParameterExpression><![CDATA[$P{shipmentId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "shipmentLine.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="205" splitType="Stretch">
+			<line>
+				<reportElement uuid="4d097cc6-9e12-4246-9676-33e6fec64296" positionType="FixRelativeToBottom" x="0" y="164" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="122e50e3-cd48-48a4-a584-9208bcbc8f04" x="144" y="168" width="100" height="20"/>
+				<textElement>
+					<font size="12" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shipper}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="1eaad730-9f7c-4dcd-b094-aa9d1a8834e1" x="349" y="168" width="100" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{itemno}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="8a372a80-24dc-45da-bfca-8bc380aa9984" style="Column header" x="-1" y="168" width="140" height="20"/>
+				<textElement/>
+				<text><![CDATA[Incaricato del Trasporto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7ae54119-d358-468b-bb37-76cc66fdb8eb" style="Column header" x="275" y="168" width="59" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[N. Colli]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3ecc2de6-c7a0-4961-aecd-2e3bed89e6c9" style="Column header" x="206" y="188" width="128" height="15"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Firma del Destinatario]]></text>
+			</staticText>
+			<elementGroup>
+				<staticText>
+					<reportElement uuid="b54ab060-7835-47e3-a5ad-3f7a46653705" style="Column header" x="156" y="139" width="243" height="20"/>
+					<textElement/>
+					<text><![CDATA[Stabilimento con autorizzazione CE]]></text>
+				</staticText>
+				<image>
+					<reportElement uuid="a47b9df9-4767-4184-b1db-35bda2a5dbe7" x="370" y="126" width="73" height="36"/>
+					<imageExpression><![CDATA[./images/bollo.gif"]]></imageExpression>
+				</image>
+			</elementGroup>
+			<staticText>
+				<reportElement uuid="8204025d-0e77-43af-8b65-676555e31897" style="Column header" x="47" y="109" width="463" height="20"/>
+				<textElement/>
+				<text><![CDATA[Le nostre materie prime sono selezionate, allevate, macellate e sezionate in Italia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8e4c1c3e-cb26-4b46-8293-5608a3ab77ea" style="Column header" x="47" y="63" width="463" height="20" forecolor="#0000FF"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Assolve gli obblighi di cui all'articolo 62, comma 1, del decreto legge 24 gennaio 2012, n. 1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eddf4945-c19c-4d47-9512-a093f795f394" style="Column header" x="47" y="86" width="463" height="20" forecolor="#0000FF"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[convertito, con modificazioni, dalla legge 24 marzo 2012, n. 27. ]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="20" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

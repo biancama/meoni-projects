@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" omit-xml-declaration="yes"/>
+
+    <xsl:template match="/">
+        <html>
+            <head><title>List of Today's workshops</title></head>
+            <body>
+                <h1>Welcome to Workshops' list</h1>
+                <p>Today's workshops are:</p>
+                <ul>
+                	<xsl:for-each select="/company/workshop">
+                	<li>
+                		<xsl:value-of select="./title" /> teached by -
+                		<xsl:value-of select="./teacher" />                 		
+                	</li>
+                	</xsl:for-each>                	
+                </ul>                
+            </body>
+        </html>
+    </xsl:template>
+
+
+</xsl:stylesheet>

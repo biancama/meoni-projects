@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shipment" language="groovy" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="15" bottomMargin="25">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="416"/>
+	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/massimo/workspaceJava/EasyShipment/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shipmentId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select io.m_inout_id as id, io.documentno as documentNo, to_char(io.dateordered, 'DD/MM/YYYY') as date, io.description as note, bp.name as company, coalesce(l.address1,'') || ' ' || coalesce(l.postal,'') || ' ' || coalesce(l.city,'') as address,
+coalesce(l_s.address1,'') || ' ' || coalesce(l_s.postal,'') || ' ' || coalesce(l_s.city,'') as addressShip, sh.name as shipper, coalesce(cast(io.itemno as text), 'A VISTA') as itemNo
+	from m_inout io
+	inner join c_bpartner bp on (io.c_bpartner_id = bp.c_bpartner_id)
+	left join c_bpartner_location bpl on (bp.c_bpartner_id = bpl.c_bpartner_id)
+    inner join c_location l on (l.c_location_id = bpl.c_location_id)
+    left join c_bpartner sh on (io.shipper_id = sh.c_bpartner_id)
+    left join c_bpartner_location bpl_s on (io.c_bpartner_location_id = bpl_s.c_bpartner_location_id)
+    inner join c_location l_s on (l_s.c_location_id = bpl_s.c_location_id)
+where io.m_inout_id = $P{shipmentId}
+ and bpl.isActive = 'Y' and bpl.isbillto = 'Y'
+    and bpl_s.isActive = 'Y' and bpl_s.isshipto = 'Y']]>
+	</queryString>
+	<field name="id" class="java.math.BigDecimal"/>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="date" class="java.lang.String"/>
+	<field name="note" class="java.lang.String"/>
+	<field name="company" class="java.lang.String"/>
+	<field name="address" class="java.lang.String"/>
+	<field name="addressship" class="java.lang.String"/>
+	<field name="shipper" class="java.lang.String"/>
+	<field name="itemno" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="291" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="3" width="200" height="100"/>
+				<imageExpression class="java.lang.String"><![CDATA["./images/MEONI.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="SubTitle" x="255" y="26" width="300" height="40"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Via Ferrucci, 5  Montale (PT)
+Tel. (0573) 55080  Fax (0573) 959386
+Cod. Fisc. e Part. I.V.A. 0045531 047 4]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="382" y="86" width="152" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="105" width="152" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="324" y="86" width="50" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Numero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="355" y="105" width="19" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Del]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="127" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Title" x="0" y="83" width="253" height="33"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[D.D.T. - Documento di Trasporto]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="205" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Column header" x="0" y="145" width="128" height="20"/>
+				<textElement/>
+				<text><![CDATA[Ditta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="0" y="166" width="128" height="20"/>
+				<textElement/>
+				<text><![CDATA[Indirizzo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="0" y="190" width="128" height="15"/>
+				<textElement/>
+				<text><![CDATA[Luogo Destinazione:]]></text>
+			</staticText>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="268" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Column header" x="0" y="209" width="180" height="15"/>
+				<textElement/>
+				<text><![CDATA[Causale del Trasporto: Vendita]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="0" y="224" width="75" height="15"/>
+				<textElement/>
+				<text><![CDATA[Annotazioni:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="0" y="275" width="50" height="15" forecolor="#000000"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Linea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="50" y="275" width="255" height="15" forecolor="#000000"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prodotto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="355" y="275" width="100" height="15" forecolor="#000000"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantità]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="455" y="275" width="38" height="15" forecolor="#000000"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[UM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="493" y="275" width="100" height="15" forecolor="#000000"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lotto]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="149" y="145" width="404" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{company}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="166" width="404" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="224" width="473" height="44"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{note}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="2" y="289" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Column header" x="0" y="127" width="128" height="15"/>
+				<textElement/>
+				<text><![CDATA[Destinatario:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="SubTitle" x="255" y="1" width="300" height="25"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Meoni s.n.c]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="SubTitle" x="255" y="65" width="300" height="18" forecolor="#2D2DFF"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[www.salumificiomeoni.com  - info@salumificiomeoni.com]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="149" y="190" width="404" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{addressship}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="553" height="29" isPrintWhenDetailOverflows="true"/>
+				<subreportParameter name="shipmentId">
+					<subreportParameterExpression><![CDATA[$P{shipmentId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "shipmentBLine.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="96" splitType="Stretch">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="59" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="144" y="60" width="100" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{shipper}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="349" y="60" width="100" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{itemno}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="-1" y="60" width="140" height="20"/>
+				<textElement/>
+				<text><![CDATA[Incaricato del Trasporto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="275" y="60" width="59" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[N. Colli]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="206" y="80" width="128" height="15"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Firma del Destinatario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="156" y="31" width="243" height="20"/>
+				<textElement/>
+				<text><![CDATA[Stabilimento con autorizzazione CE]]></text>
+			</staticText>
+			<image>
+				<reportElement x="374" y="21" width="73" height="36"/>
+				<imageExpression class="java.lang.String"><![CDATA["/home/massimo/workspaceJava/EasyShipment/resources/reports/images/bollo.gif"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="Column header" x="57" y="6" width="463" height="20"/>
+				<textElement/>
+				<text><![CDATA[Le nostre materie prime sono selezionate, allevate, macellate e sezionate in Italia]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement style="Column header" x="433" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Pag. "+$V{PAGE_NUMBER}+" di"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Column header" x="513" y="0" width="40" height="20"/>
+				<textElement>
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

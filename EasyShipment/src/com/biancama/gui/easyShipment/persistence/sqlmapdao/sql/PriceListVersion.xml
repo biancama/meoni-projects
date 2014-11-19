@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PriceList">
+
+  <typeAlias alias="priceListVersion" type="com.biancama.gui.easyShipment.model.PriceListVersion"/>
+
+
+  <resultMap id="priceListVersionResult" class="priceListVersion">
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="id" column="m_pricelist_version_id"/>
+    <result property="priceListId" column="m_pricelist_id"/>
+    <result property="name" column="name"/>
+    <result property="description" column="description"/>
+    <result property="validFrom" column="validfrom"/>
+    
+    
+  </resultMap>
+  <!--   
+	<select id="getPriceListVesionByDate" parameterClass="priceListVersion" resultClass="priceListVersion">
+		select plv.m_pricelist_version_id id, plv.ad_client_id clientId, plv.ad_org_id orgId,
+		plv.m_pricelist_id pricelistId, plv.name, plv.description, plv.validfrom
+		from m_pricelist_version plv
+		where plv.validfrom = #validFrom#
+		and plv.m_pricelist_version_id = #id#
+	</select>
+
+ <insert id="insertPriceListVersion" parameterClass="priceListVersion">
+ 	INSERT INTO m_pricelist_version (m_pricelist_version_id, ad_client_id, ad_org_id,isactive,
+ 									 created,createdby,updated,updatedby,
+ 	                                 m_pricelist_id, name, description, validfrom,
+ 	                                 m_discountschema_id) 
+ 	VALUES (#id#,#clientId#,#orgId#,'Y',
+ 	current_timestamp,100,current_timestamp,100,
+ 	#pricelistId#,#name#,#description#,#validFrom#,
+ 	1000000)
+ </insert>
+ -->
+  
+	<select id="selectPriceListVersionByCustomer" parameterClass="java.util.Map" resultClass="integer">
+		select  plv.m_pricelist_version_id
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		inner join c_bpartner bp on (bp.m_pricelist_id = pl.m_pricelist_id)
+		where plv.validfrom &lt;= #validFrom#
+		and bp.name = #customerName# 
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000
+		and plv.validfrom IN (
+		select  max(plv.validfrom)
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		inner join c_bpartner bp on (bp.m_pricelist_id = pl.m_pricelist_id)
+		where plv.validfrom &lt;= #validFrom#
+		and bp.name =  #customerName# 
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000)
+	</select>
+
+	<select id="selectPriceListVersionByGroup" parameterClass="java.util.Map" resultClass="integer">
+		select  plv.m_pricelist_version_id
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		inner join c_bp_group bpg on (bpg.m_pricelist_id = pl.m_pricelist_id)
+		inner join c_bpartner bp on (bp.c_bp_group_id = bpg.c_bp_group_id)
+		where plv.validfrom &lt;= #validFrom#
+		and bp.name = #customerName#  
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000
+		and plv.validfrom IN (
+		select  max(plv.validfrom)
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		inner join c_bp_group bpg on (bpg.m_pricelist_id = pl.m_pricelist_id)
+		inner join c_bpartner bp on (bp.c_bp_group_id = bpg.c_bp_group_id)
+		where plv.validfrom &lt;= #validFrom#
+		and bp.name = #customerName#  
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000)	
+	</select>
+
+	<select id="selectPriceListVersionByDefault" parameterClass="java.util.Map" resultClass="integer">
+		select  plv.m_pricelist_version_id
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		where pl.isActive = 'Y' 
+		and plv.validfrom &lt;= #validFrom#
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000
+		and plv.validFrom
+		IN (
+		select  max(plv.validfrom)
+		from m_pricelist_version plv
+		inner join m_pricelist pl on (pl.m_pricelist_id = plv.m_pricelist_id)
+		where pl.isActive = 'Y' 
+		and plv.validfrom &lt;= #validFrom#
+		and plv.isactive = 'Y'
+		and plv.ad_client_id = 1000000
+		and plv.ad_org_id = 1000000)
+	</select>
+
+ </sqlMap>

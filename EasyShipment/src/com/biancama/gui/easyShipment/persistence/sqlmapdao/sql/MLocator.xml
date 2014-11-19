@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MLocator">
+
+  <typeAlias alias="mLocator" type="com.biancama.gui.easyShipment.model.MLocator"/>
+
+  <cacheModel id="mLocatorCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="mLocatorResult" class="mLocator">
+    <result property="id" column="m_locator_id"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+  </resultMap>
+
+
+  <select id="getDefaultLocator" resultClass="integer" cacheModel="mLocatorCache" parameterClass="mLocator">
+    select l.m_locator_id
+	from M_locator l
+	where l.ad_client_id = #clientId#
+	and l.ad_org_id =  #orgId#
+	and l.isactive = 'Y'
+	and l.isdefault = 'Y';
+  </select>
+
+</sqlMap>

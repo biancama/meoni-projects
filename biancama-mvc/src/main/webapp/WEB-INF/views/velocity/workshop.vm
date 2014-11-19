@@ -1,0 +1,35 @@
+<html>
+<head><title>Biancama FreeMarker Spring MVC</title>
+<body>
+<div id="header">
+<H2>
+    Workshops of today
+</H2>
+</div>
+ 
+<div id="content">
+<table style="border: 1px solid; width: 500px; text-align:center">
+ <thead style="background:#fcf">
+  <tr>
+   <th>Title</th>
+   <th>Teacher</th>
+  </tr>
+ </thead>
+ <tbody>
+ 
+ #foreach ($workshop in ${model.workshops})
+  <tr>
+   <td>${workshop.title}</td>
+   <td>${workshop.teacher.username}</td>
+  </tr>
+ #end
+ </tbody>
+</table>
+
+
+#if ($model.workshops.isEmpty()) 
+ There are currently no workshops today for that user .
+#end 
+
+</div> 
+</body>

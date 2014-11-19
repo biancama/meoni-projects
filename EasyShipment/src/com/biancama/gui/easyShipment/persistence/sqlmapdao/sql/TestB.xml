@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TestB">
+
+  <typeAlias alias="testB" type="com.biancama.gui.easyShipment.model.TestB"/>
+  <typeAlias alias="testLineB" type="com.biancama.gui.easyShipment.model.TestLineB"/>
+
+  <cacheModel id="testBCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+
+  <select id="getTestB" resultClass="testB" parameterClass="testB" cacheModel="testBCache">
+    select b.testb_id as id, b.m_inout_id as shipmentId, b.dateordered as dateOrdered, b.documentno as documentNo, b.customer as customer
+	from testb b
+	where b.documentno = #documentNo#
+	and TO_CHAR(b.dateordered, 'YYYY') = #calendarYear#
+  </select>
+ <select id="getTestlineBCount" resultClass="integer" parameterClass="integer" cacheModel="testBCache">
+    select count(*)
+	from testlineb lb
+	where lb.m_inout_id =#shipmentId#
+  </select>
+
+  <insert id="insertTestB" parameterClass="testB">
+  	<selectKey keyProperty="id" resultClass="int">
+	SELECT nextVal('testB_sq')
+	</selectKey>
+  	insert into testb(testb_id, m_inout_id, dateordered, documentno, customer) 
+    values (#id#, #shipmentId#, #dateOrdered#, #documentNo#, #customer#)
+  </insert>
+
+ 
+	<update id="updateTestB" parameterClass="testB">
+  UPDATE testb
+  set customer = #customer#
+  where testb_id = #id#
+  </update>
+  
+    <insert id="insertTestLineB" parameterClass="testLineB">
+  	<selectKey keyProperty="id" resultClass="int">
+		SELECT nextVal('testBLine_sq')
+	</selectKey>
+	insert into testLineb (testLineB_id, testB_id, m_inoutline_id, 
+	m_inout_id, movementqty, line, lot, m_product_id,
+    m_product, m_attributesetinstance_id)
+    values (#id#, #testId#, #shipmentLineId#, 
+    #shipmentId#, #quantity#, #line#, #lot#, #productId#,
+    #pruduct#, #attributesetinstanceId#)  
+  </insert>
+  
+    <update id="updateTestLineB" parameterClass="testLineB">
+    	update testLineb
+    	set movementqty = #quantity#, line = #line# , 
+    	lot = #lot#, m_product_id = #productId#,
+    	m_product = #pruduct#, m_attributesetinstance_id = #attributesetinstanceId#
+    	where testLineB_id = #id#
+  	</update>
+</sqlMap>

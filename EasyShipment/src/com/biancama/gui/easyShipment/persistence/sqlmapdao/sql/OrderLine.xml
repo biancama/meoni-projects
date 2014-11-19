@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OrderLine">
+
+  <typeAlias alias="orderLine" type="com.biancama.gui.easyShipment.model.OrderLine"/>
+
+
+  <resultMap id="orderLineResult" class="orderLine">
+      <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="id" column="c_orderline_id"/>
+    <result property="orderId" column="c_order_id"/>
+    <result property="line" column="line"/>
+    <result property="bpartnerId" column="c_bpartner_id"/>
+    <result property="bpartnerLocationId" column="c_bpartner_location_id"/>
+    <result property="currencyId" column="c_currency_id"/>
+    <result property="productId" column="c_project_id"/>
+    <result property="uomId" column="c_uom_id"/>
+    <result property="qty" column="qtyentered"/>
+    <result property="price" column="priceentered"/>
+    <result property="warehouseId" column="m_warehouse_id"/>
+    <result property="linenetamt" column="linenetamt"/>
+    <result property="taxId" column="c_tax_id"/>
+  </resultMap>
+
+ <insert id="insertOrderLine" parameterClass="orderLine" >
+ 	INSERT INTO C_orderline (c_orderline_id,ad_client_id,ad_org_id,
+ 	isactive,created,createdby,updated,updatedby,
+ 	c_order_id,line,c_bpartner_id,c_bpartner_location_id,
+ 	dateordered,datepromised,datedelivered,dateinvoiced,
+ 	description,m_product_id,m_warehouse_id,c_uom_id,
+ 	qtyordered,qtyreserved,qtydelivered,qtyinvoiced,
+ 	m_shipper_id,c_currency_id,pricelist,
+ 	priceactual,pricelimit,linenetamt,discount,
+ 	freightamt,c_charge_id,c_tax_id,
+ 	s_resourceassignment_id,ref_orderline_id,
+ 	m_attributesetinstance_id,isdescription,processed,
+ 	qtyentered,priceentered,c_project_id,pricecost,
+ 	qtylostsales,c_projectphase_id,c_projecttask_id,
+ 	rrstartdate,rramt,c_campaign_id,c_activity_id,user1_id,
+ 	user2_id,ad_orgtrx_id,link_orderline_id) 
+ 	VALUES (#id#,#clientId#,#orgId#,
+ 	'Y',current_timestamp,1000000,current_timestamp,1000000,
+ 	#orderId#,#line#,#bpartnerId# ,#bpartnerLocationId#,
+ 	current_date,current_date,null,null,
+ 	null,#productId#,#warehouseId#,#uomId#,
+ 	#qty#,0,0,0,
+ 	null,#currencyId#,#price#,
+ 	#price#,#price#,#linenetamt#,0.00,
+ 	0,null,#taxId#,
+ 	null,null,
+ 	0,'N','N',
+ 	#qty#,#price#,null,null,0,
+ 	null,null,null,null,null,null,null,null,null,null)
+  </insert>
+   <update id="updateOrderLine" parameterClass="orderLine" >
+   	UPDATE C_orderline 
+   	set updated = current_timestamp, line = #line#,
+   	c_bpartner_id = #bpartnerId#, c_bpartner_location_id = #bpartnerLocationId#,
+   	m_product_id = #productId#, m_warehouse_id = #warehouseId#,
+   	c_uom_id = #uomId#, qtyordered = #qty#,
+   	c_currency_id = #currencyId#, pricelist = #price#,
+    priceactual = #price#, pricelimit = #price#,
+    linenetamt = #linenetamt#,c_tax_id = #taxId#,
+    qtyentered= #qty#, priceentered = #price#
+   	where c_orderline_id = #id#
+  </update>
+  <delete id="deleteOrderLine" parameterClass="integer">
+  	delete from C_orderline where C_orderline_id = #id#
+  </delete>
+    <delete id="deleteOrderLineFromShipmentLineId" parameterClass="integer">
+  	delete from C_orderline where C_orderline_id IN (Select C_orderline_id from M_inoutline where M_inoutline_id = #id#)
+  </delete>
+</sqlMap>

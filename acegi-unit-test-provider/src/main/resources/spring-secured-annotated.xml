@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+<!-- spring.xml -->
+
+  <!-- This is the bean that needs to be protected. -->
+  <bean id='employeeService' class='com.biancama.security.EmployeeServiceSecuredAnnotatedImpl'/>
+  <security:global-method-security secured-annotations="enabled"  pre-post-annotations="enabled"
+    access-decision-manager-ref="accessDecisionManager" />
+   <security:authentication-manager>
+	<security:authentication-provider  >
+		<security:password-encoder hash="sha-256">
+			 <security:salt-source user-property="username"/> 
+		</security:password-encoder>
+		<security:user-service >
+		<!--  password manager{manager} -->
+			<security:user name="manager" password="597dd6df16d8e7444e6ffb8fde3ddd06aafb495c4bcf4b24812835c4cf51d4e0"
+				authorities="ROLE_MANAGER"/>
+		<!--  password worker{worker} -->
+			<security:user name="worker" password="94f2bd021547bdd88bc0c5b0e12e68563cd934a86f4a6e2f804b4bd95190d15c"
+				authorities="ROLE_WORKER"/>
+		<!--  password {anonymous} -->		
+			<security:user name="anonymous" password="eeefbafc6f25b4b5440b18ba083f51821986ec196b6789c7364a6c38993a3943"
+				authorities="ROLE_ANONYMOUS"/>
+		</security:user-service>
+	</security:authentication-provider>
+  </security:authentication-manager>
+  <!-- This bean specifies that a user can access the protected methods -->
+  <!-- if they have any one of the roles specified in the objectDefinitionSource above. -->
+  <bean id='accessDecisionManager' class='org.springframework.security.access.vote.AffirmativeBased'>
+    <property name='decisionVoters'>
+      <list><ref bean='roleVoter'/></list>
+    </property>
+  </bean>
+
+  <bean id='roleVoter' class='org.springframework.security.access.vote.RoleVoter'/>
+   
+</beans>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ShipmentLine">
+
+  <typeAlias alias="shipmentLine" type="com.biancama.gui.easyShipment.model.ShipmentLine"/>
+
+  <cacheModel id="shipmentLineCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="shipmentLineResult" class="shipmentLine">
+    <result property="id" column="m_inoutline_id"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="line" column="line"/>
+    <result property="shipmentId" column="m_inout_id"/>
+    <result property="orderLineId" column="c_orderline_id"/>
+    <result property="locatorId" column="m_locator_id"/>
+    <result property="productId" column="m_product_id"/>
+    <result property="uomId" column="c_uom_id"/>
+    <result property="quantity" column="qtyentered"/>
+    <result property="attributeistanceId" column="m_attributesetinstance_id"/>
+    <result property="price" />    
+  </resultMap>
+
+
+  <insert id="insertShipmentLine" parameterClass="shipmentLine" >
+  INSERT INTO M_inoutline (m_inoutline_id,ad_client_id,ad_org_id,
+  isactive,created,createdby,updated,updatedby,
+  line,description,m_inout_id,c_orderline_id,m_locator_id,
+  m_product_id,c_uom_id,movementqty,isinvoiced,
+  m_attributesetinstance_id,isdescription,
+  confirmedqty,pickedqty,scrappedqty,targetqty,ref_inoutline_id,
+  processed,qtyentered, c_charge_id,c_project_id,c_projectphase_id,
+  c_projecttask_id,c_campaign_id,c_activity_id,user1_id,user2_id,
+  ad_orgtrx_id,m_rmaline_id) 
+  VALUES (#id#,#clientId#,#orgId#,
+  'Y',current_timestamp,1000000,current_timestamp,1000000,
+  #line#,null,#shipmentId#,#orderLineId#,#locatorId#,
+  #productId#,#uomId#,#quantity#,'N',
+  #attributeistanceId#,'N',
+  #quantity#,0,0,0,null,
+  'N',#quantity#,null,null,null,null,null,null,null,null,null,null)
+  </insert>
+  <select id="getShipmentLine" parameterClass="integer" resultClass="shipmentLine" cacheModel="shipmentLineCache">
+  select miol.m_inoutline_id as id, miol.line as line, miol.m_locator_id as locatorId, 
+  miol.m_product_id as productId, miol.c_uom_id as uomId,
+  miol.movementqty as quantity, miol.m_attributesetinstance_id as attributeistanceId, miol.c_orderline_id as orderLineId, ol.priceentered as price 
+  from M_inoutline miol
+  inner join c_orderline ol on (ol.c_orderline_id = miol.c_orderline_id)
+  where m_inoutline_id = #id#
+  </select>
+  <select id="getShipmentLines" parameterClass="shipmentLine" resultClass="shipmentLine" cacheModel="shipmentLineCache">
+  select io.m_inoutline_id as id, b.testlineb_id as idB, io.line as line,
+  io.m_product_id as productId,
+  io.movementqty as quantity, b.movementqty as quantityB, io.m_attributesetinstance_id as attributeistanceId, ol.priceentered as price 
+  from M_inoutline io
+  inner join c_orderline ol on (ol.c_orderline_id = io.c_orderline_id)
+  left join testLineB b on (b.m_inoutline_id = io.m_inoutline_id) 
+  where io.m_inout_id = #shipmentId#
+  Union
+	select io.m_inoutline_id as id, b.testlineb_id as idB, b.line as line,
+  b.m_product_id as productId,
+  io.movementqty as quantity, b.movementqty as quantityB, b.m_attributesetinstance_id as attributeistanceId, ol.priceentered as price 
+  from M_inoutline io
+  inner join c_orderline ol on (ol.c_orderline_id = io.c_orderline_id)
+  right join testLineB b on (b.m_inoutline_id = io.m_inoutline_id) 
+ where b.m_inout_id  = #shipmentId#
+  order by line
+  </select>
+  
+   <select id="getShipmentLinesIds" parameterClass="integer" resultClass="integer" cacheModel="shipmentLineCache">
+  select m_inoutline_id as id
+  from M_inoutline
+  where m_inout_id = #shipmentId#
+  </select>
+  <update id="updateShipmentLine" parameterClass="shipmentLine" >
+  UPDATE M_inoutline
+  set updated = current_timestamp, line = #line#,
+  m_locator_id = #locatorId#, 
+  m_product_id = #productId#,c_uom_id = #uomId#,
+  movementqty = #quantity#, m_attributesetinstance_id = #attributeistanceId#,
+  confirmedqty = #quantity#, qtyentered = #quantity#
+  where m_inoutline_id = #id#
+  </update>
+  
+  <delete id="removeShipmentLine" parameterClass="integer">
+  	delete from M_inoutline where M_inoutline_id = #id#
+  </delete>
+</sqlMap>

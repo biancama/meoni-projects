@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Customer">
+
+  <typeAlias alias="customer" type="com.biancama.gui.easyShipment.model.Customer"/>
+
+  <cacheModel id="customerCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="customerResult" class="customer">
+    <result property="id" column="c_bpartner_id"/>
+    <result property="name" column="name"/>
+    <result property="value" column="value"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+    <result property="salesRep" column="salesrep_id"/>
+    <result property="paymentTermId" column="c_paymentterm_id"/>
+    <result property="invoiceRule" column="invoicerule"/>
+    <result property="deliveryRule" column="deliveryrule"/>
+    <result property="deliveryViaRule" column="deliveryviarule"/>
+    <result property="pricelistId" column="m_pricelist_id"/>
+    <result property="currencyId" column="c_currency_id"/>
+    
+    
+  </resultMap>
+
+
+  <select id="getCustomerList" resultClass="customer" cacheModel="customerCache" >
+    select b.c_bpartner_id, b.name, b.value
+	from C_BPartner b
+	where b.isactive = 'Y'
+	and b.ad_client_id = #clientId#
+	and b.ad_org_id = #orgId#
+	and b.iscustomer ='Y'
+	order by b.name
+  </select>
+
+  <select id="getEmployeesList" resultClass="customer" cacheModel="customerCache" >
+    select b.c_bpartner_id, b.name, b.value
+	from C_BPartner b
+	where b.isactive = 'Y'
+	and b.ad_client_id = #clientId#
+	and b.ad_org_id = #orgId#
+	and b.isemployee ='Y'
+	order by b.name
+  </select>
+
+  <select id="getCustomerName" resultClass="string" cacheModel="customerCache" parameterClass="integer" >
+    select b.name
+	from C_BPartner b
+	where b.c_bpartner_id = #id#
+  </select>
+
+  <select id="getCustomerId" resultClass="integer" cacheModel="customerCache" parameterClass="string" >
+    select b.c_bpartner_id
+	from C_BPartner b
+	where  b.name = #value#
+  </select>
+  <select id="getCustomer" resultClass="customer" cacheModel="customerCache" parameterClass="integer" resultMap="customerResult">
+    select b.ad_client_id, b.ad_org_id, 
+    b.c_bpartner_id, b.name, b.value, b.salesrep_id, 
+    b.c_paymentterm_id, b.invoicerule, 
+    b.deliveryrule, b.deliveryviarule,b.m_pricelist_id, pl.c_currency_id
+	from C_BPartner b
+	inner join m_priceList pl on (pl.m_pricelist_id = b.m_pricelist_id)  
+	where b.c_bpartner_id = #bpartnerId#
+  </select>
+  <select id="getBillPartner" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+    select c_bpartner_id
+    from C_BPartner 
+    where C_BPartner.IsSummary='N'  AND (C_BPartner.C_BPartner_ID=#bpartnerId# OR 'N'='Y'
+	OR EXISTS (SELECT * FROM C_BP_Relation r WHERE C_BPartner.C_BPartner_ID=r.C_BPartnerRelation_ID 
+	AND r.C_BPartner_ID=#bpartnerId# AND r.IsBillTo='Y'))
+  </select>
+  <select id="getBillPartnerLocationId" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+ 	select bpl.c_bpartner_location_id
+	from c_bpartner_location bpl
+	where bpl.c_bpartner_id = #billBPartnerId#
+	and bpl.isactive = 'Y'
+	and bpl.isbillto ='Y' 
+	order by bpl.c_bpartner_location_id 
+	</select>
+  <select id="getContact" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+ 	select u.ad_user_id
+	from ad_user u
+	where u.c_bpartner_id = #bpartnerId#
+	</select>
+  <select id="getDefaultSalesRep" resultClass="integer" cacheModel="customerCache" parameterClass="customer" >
+	select u.ad_user_id
+	from ad_user u
+    inner join c_bpartner bp on (bp.c_bpartner_id = u.c_bpartner_id)
+	where bp.ad_client_id = #clientId#
+	and bp.ad_org_id = #orgId#
+	and bp.isactive ='Y'
+	and bp.issalesrep ='Y'
+	</select>
+  <select id="getPayPartner" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+    select c_bpartner_id
+    from C_BPartner 
+    where C_BPartner.IsSummary='N'  AND (C_BPartner.C_BPartner_ID=#bpartnerId# OR 'N'='Y'
+	OR EXISTS (SELECT * FROM C_BP_Relation r WHERE C_BPartner.C_BPartner_ID=r.C_BPartnerRelation_ID 
+	AND r.C_BPartner_ID=#bpartnerId# AND r.ispayfrom='Y'))
+	</select>
+  <select id="getPayPartnerLocationId" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+ 	select bpl.c_bpartner_location_id
+	from c_bpartner_location bpl
+	where bpl.c_bpartner_id = #billBPartnerId#
+	and bpl.isactive = 'Y'
+	and bpl.ispayfrom ='Y'   
+	</select>
+  <select id="getShipmentAddress" resultClass="integer" cacheModel="customerCache" parameterClass="integer" >
+ 	select bpl.c_bpartner_location_id
+	from c_bpartner_location bpl
+	where bpl.c_bpartner_id = #bpartnerId#
+	and bpl.isactive = 'Y'
+	and bpl.isshipto ='Y'   
+	</select>
+</sqlMap>

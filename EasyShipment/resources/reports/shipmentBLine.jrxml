@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shipment_subreport1" language="groovy" pageWidth="595" pageHeight="22" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="shipmentId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select io.line line, p.name product, coalesce (io.movementqty, 0) + coalesce (b.movementqty, 0) quantity, u.uomsymbol um, coalesce(a.value, '') lot
+  from M_inoutline io
+  left join testLineB b on (b.m_inoutline_id = io.m_inoutline_id)
+  inner join m_product p on (p.m_product_id = io.m_product_id)
+  inner join c_uom u on (u.c_uom_id = p.c_uom_id)
+  left join m_attributeinstance a on (a.m_attributesetinstance_id = io.m_attributesetinstance_id)
+  where io.m_inout_id = $P{shipmentId}
+  Union
+  select b.line line, b.m_product product, coalesce (b.movementqty, 0) quantity, u.uomsymbol um, coalesce(b.lot, '') lot
+  from testLineB b
+    inner join m_product p on (p.m_product_id = b.m_product_id)
+    inner join c_uom u on (u.c_uom_id = p.c_uom_id)
+ where b.m_inout_id  = $P{shipmentId}
+ and b.m_inoutline_id IS NULL]]>
+	</queryString>
+	<field name="line" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="quantity" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="um" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lot" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<sortField name="line"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="1" width="50" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{line}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="1" width="255" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{product}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="355" y="1" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="1" width="38" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{um}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="1" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{lot}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

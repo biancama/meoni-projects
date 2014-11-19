@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Shipment">
+
+  <typeAlias alias="shipment" type="com.biancama.gui.easyShipment.model.Shipment"/>
+
+  <cacheModel id="shipmentCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+  <resultMap id="shipmentResult" class="shipment">
+    <result property="id" column="m_inout_id"/>
+    <result property="documentNo" column="documentno"/>
+    <result property="description" column="description"/>
+    <result property="orderId" column="c_order_id"/>
+    <result property="bpartnerId" column="c_bpartner_id"/>
+    <result property="bpartnerLocationId" column="c_bpartner_location_id"/>
+    <result property="warehouseId" column="m_warehouse_id"/>
+    <result property="deliveryRule" column="deliveryrule"/>
+    <result property="deliveryViaRule" column="deliveryviarule"/>
+    <result property="salesRep" column="salesrep_id"/>
+    <result property="clientId" column="ad_client_id"/>
+    <result property="orgId" column="ad_org_id"/>
+  </resultMap>
+
+  <select id="getDocumentNo" resultClass="string" parameterClass="shipment" cacheModel="shipmentCache">
+    select y.CurrentNext 
+    From AD_Sequence_No y 
+    inner join ad_sequence s on (s.ad_sequence_id = y.ad_sequence_id)
+    Where s.name='MM Shipment'
+    and s.ad_client_id = #clientId#
+    and s.isactive = 'Y'
+    and y.CalendarYear = #calendarYear#
+  </select>
+
+  <select id="getShipmentFromDocNo" resultClass="shipment" parameterClass="shipment" cacheModel="shipmentCache">
+	select io.m_inout_id as id, io.documentno as documentNo, io.c_bpartner_id as bpartnerId, io.description as description, io.c_order_id as orderId, 
+	io.Shipper_id as shipperId, io.itemNo as itemNo,  t.testb_id as idB, io.docstatus as docStatus, io.movementdate as shipmentDate, io.c_bpartner_location_id as bpartnerLocationId
+	from m_inout io
+	left join testb t on (t.m_inout_id = io.m_inout_id)
+	where io.documentNo = #documentNo# 
+	and TO_CHAR(io.dateacct, 'YYYY') = #calendarYear#
+	and ad_client_id = #clientId#
+	and  ad_org_id = #orgId#
+  </select>
+  <select id="getShipmentFromId" resultClass="shipment" parameterClass="integer" cacheModel="shipmentCache">
+	select io.m_inout_id as id, io.documentno as documentNo, io.c_bpartner_id as bpartnerId, io.description as description, io.c_order_id as orderId, 
+	io.Shipper_id as shipperId, io.itemNo as itemNo,  t.testb_id as idB, io.docstatus as docStatus, io.movementdate as shipmentDate, io.c_bpartner_location_id as bpartnerLocationId
+	from m_inout io
+	left join testb t on (t.m_inout_id = io.m_inout_id)
+	where io.m_inout_id = #id# 
+  </select>
+  <insert id="insertShipment" parameterClass="shipment">
+  INSERT INTO M_inout (m_inout_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,
+     issotrx,documentno,docaction,docstatus,posted,processing,processed,
+     c_doctype_id,description,c_order_id,dateordered,isprinted,
+     movementtype,movementdate,dateacct,c_bpartner_id,c_bpartner_location_id,
+     m_warehouse_id,poreference,deliveryrule,freightcostrule,freightamt,
+     deliveryviarule,m_shipper_id,c_charge_id,chargeamt,priorityrule,dateprinted,
+     c_invoice_id,createfrom,generateto,sendemail,ad_user_id,salesrep_id,
+     nopackages,pickdate,shipdate,trackingno,ad_orgtrx_id,c_project_id,
+     c_campaign_id,c_activity_id,user1_id,user2_id,datereceived,isintransit,
+     ref_inout_id,createconfirm,createpackage,isapproved,isindispute,volume,
+     weight,m_rma_id,reversal_id, Shipper_id, itemNo) 
+     VALUES (#id#,#clientId#,#orgId#,'Y',current_timestamp,1000000,current_timestamp,1000000,
+     'Y',#documentNo#,'CO','DR','N','N','N',
+     1000011,#description#,#orderId#,#shipmentDate#,'N',
+     'C-',#shipmentDate#,#shipmentDate#,#bpartnerId# ,#bpartnerLocationId#,
+     #warehouseId#,null,#deliveryRule#,'I',0,
+     #deliveryViaRule#,null,null,0,'5',null,
+     null,'N','N','N',null,#salesRep#,
+     0,null,null,null,null,null,null,
+     null,null,null,null,'N',null,'N','N','N','N',0,
+     0,null,null, #shipperId#, #itemNo#);
+  </insert>
+
+ 
+<update id="updateShipment" parameterClass="shipment">
+  UPDATE M_inout
+  set updated = current_timestamp,description = #description#,
+  c_bpartner_id = #bpartnerId:NUMBER# ,c_bpartner_location_id = #bpartnerLocationId:NUMBER#,
+   m_warehouse_id = #warehouseId:NUMBER#, deliveryrule = #deliveryRule#,
+   deliveryviarule = #deliveryViaRule#,  salesrep_id = #salesRep#, 
+   Shipper_id = #shipperId# , itemNo = #itemNo#, movementdate = #shipmentDate#, dateordered = #shipmentDate#
+  where m_inout_id = #id#
+  </update>
+  
+  <update id="completeShipment" parameterClass="integer">
+  UPDATE M_inout
+  set updated = current_timestamp,
+  docstatus = 'CO',
+ 	docaction = 'CL',
+ 	processed = 'Y',
+ 	isapproved = 'Y'
+  where m_inout_id = #id#
+  </update>
+</sqlMap>

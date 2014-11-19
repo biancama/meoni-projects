@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AttributeInstance">
+
+  <typeAlias alias="attributeInstance" type="com.biancama.gui.easyShipment.model.AttributeInstance"/>
+
+  <cacheModel id="attributeInstanceCache" type="LRU">
+    <flushInterval hours="24"/>
+    <property name="size" value="100"/>
+  </cacheModel>
+
+
+  <select id="getAttributeInstance" resultClass="integer" cacheModel="attributeInstanceCache" parameterClass="attributeInstance">
+	select ai.m_attributesetinstance_id as id
+	from m_attributeinstance ai
+	inner join m_attribute a on (a.m_attribute_id = ai.m_attribute_id)
+	where a.name = 'Lotto'
+	and ai.value = #value#
+	and ai.ad_client_id = #clientId#
+	and ai.ad_org_id = #orgId#
+  </select>
+
+  <select id="getAttributeId" resultClass="integer" cacheModel="attributeInstanceCache" parameterClass="attributeInstance">
+	select a.m_attribute_id as id
+	from m_attribute a 
+	where a.name = 'Lotto'
+	and a.ad_client_id = #clientId#
+	and a.ad_org_id = #orgId#
+  </select>
+  <select id="getAttributeSetId" resultClass="integer" cacheModel="attributeInstanceCache" parameterClass="attributeInstance">
+	select a.m_attributeset_id
+	from m_attributeset a 
+	where a.name = 'Venduti'
+	and a.ad_client_id = #clientId#
+	and a.ad_org_id = #orgId#
+  </select>
+
+	<insert id="insertAttributeInstance" parameterClass="attributeInstance">
+		INSERT INTO m_attributeinstance (m_attributesetinstance_id,m_attribute_id, ad_client_id,
+		ad_org_id, isactive ,created, createdby, updated, updatedby,
+		m_attributevalue_id,value,valuenumber)
+		VALUES (#id#, #attributeId#, #clientId#, 
+		#orgId#,'Y',current_timestamp, 1000000,current_timestamp,1000000,
+		null,#value#,null)
+	</insert>
+	<insert id="insertAttributeSetInstance" parameterClass="attributeInstance">
+		INSERT INTO m_attributesetinstance (m_attributesetinstance_id,ad_client_id,ad_org_id,isactive,created,createdby,updated,updatedby,
+		m_attributeset_id,serno,lot,guaranteedate,description,m_lot_id) 
+		VALUES (#id#,#clientId#, #orgId#, 'Y', current_timestamp, 1000000, current_timestamp, 1000000,
+		#attributeSetId#, null, null, null, #value#, null)
+	</insert>
+
+</sqlMap>
