@@ -27,7 +27,7 @@
 
 	<target name="compile">
 		<mkdir dir="${cls}" />
-		<javac srcdir="${src}" destdir="${cls}" encoding="UTF-8" classpathref="classpath" debug="on" />
+		<javac srcdir="${src}" destdir="${cls}" encoding="iso-8859-1" classpathref="classpath" debug="on" />
 	</target>
 	
 	<target name="jar" depends="compile">
