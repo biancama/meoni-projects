@@ -12,7 +12,6 @@
 	  <delete failonerror="false">
 	    <fileset dir="${cls}" includes="**/*"/>
 	  </delete>
-	  <delete dir="${temp.dir}" />
 	</target>
 
 	<!-- plugins that serialize ohn classes have to be put in the classpath -->
@@ -41,7 +40,7 @@
 		<manifest file="Manifest.MF">
 			<attribute name="Created-By" value="Massimo Biancalani" />
 			<attribute name="Main-Class" value="com.biancama.Main" />
-			<attribute name="Class-Path" value="${classpath}" />
+			<attribute name="Class-Path" value="${lib.dir}" />
 		</manifest>
 		<mkdir dir="${dist}" />
 		<jar jarfile="${dist}/EasyShipment.jar" manifest="Manifest.MF">
@@ -54,8 +53,25 @@
 			</fileset>
 		</jar>
 	</target>
-	
-	<target name="run" depends="copy, jar">
+
+    <target name="jasper" description="Compiles report designs specified using the &quot;srcdir&quot; in the &lt;jrc&gt; tag." >
+        <mkdir dir="./build/reports"/>
+        <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
+            <classpath refid="classpath"/>
+        </taskdef>
+        <jrc
+                srcdir="./resources/reports"
+                destdir="./resources/reports"
+                tempdir="${dist}"
+                keepjava="true"
+                xmlvalidation="true">
+            <classpath refid="classpath"/>
+            <include name="**/*.jrxml"/>
+        </jrc>
+    </target>
+
+
+    <target name="run" depends="copy, jar">
 	        <java fork="true" classname="com.biancama.Main" args="-Xmx512m">
 	            <classpath>
 	                <path refid="classpath"/>            	
