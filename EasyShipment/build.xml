@@ -7,7 +7,13 @@
 <project name="easyshipment" default="copy" basedir=".">
 	<property file="folder.properties"/>
 
-
+	<target name="clean">
+	  <echo>=== CLEAN ===</echo>
+	  <delete failonerror="false">
+	    <fileset dir="${cls}" includes="**/*"/>
+	  </delete>
+	  <delete dir="${temp.dir}" />
+	</target>
 
 	<!-- plugins that serialize ohn classes have to be put in the classpath -->
 	<path id="classpath">
@@ -25,9 +31,9 @@
 	  	    </copy>
 	  </target>
 
-	<target name="compile">
+	<target name="compile" depends="clean">
 		<mkdir dir="${cls}" />
-		<javac srcdir="${src}" destdir="${cls}" encoding="UTF-8" classpathref="classpath" debug="on" />
+		<javac srcdir="${src}" target="1.7" source="1.7" fork="true" destdir="${cls}" encoding="iso-8859-1" classpathref="classpath" debug="on" includeantruntime="false"/>
 	</target>
 	
 	<target name="jar" depends="compile">
@@ -59,7 +65,7 @@
 	        </java>
 	    </target>
 
-	<target name="simplerun" depends="copy">
+	<target name="simplerun"  depends="copy">
 	        <java fork="true" classname="com.biancama.Main">
 	            <arg value="-Xmx512m"/>
 	        	<classpath>

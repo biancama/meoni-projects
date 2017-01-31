@@ -16,25 +16,6 @@
 
 package com.biancama.gui.swing.laf;
 
-import java.awt.Font;
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Map.Entry;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.FontUIResource;
-
 import com.biancama.EasyShipmentInitFlags;
 import com.biancama.config.SubConfiguration;
 import com.biancama.gui.swing.easyShipment.GUIUtils;
@@ -48,6 +29,21 @@ import com.biancama.utils.crypt.BiancaCrypt;
 import com.biancama.utils.locale.BiancaL;
 import com.biancama.utils.locale.BiancaLEvent;
 import com.biancama.utils.locale.BiancaLListener;
+
+import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.FontUIResource;
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 public class LookAndFeelController {
 
@@ -156,7 +152,7 @@ public class LookAndFeelController {
      * @return
      */
     private static LookAndFeelWrapper getDefaultLAFM() {
-        return new LookAndFeelWrapper("de.javasoft.plaf.synthetica.SyntheticaStandardLookAndFeel");
+        return new LookAndFeelWrapper("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
     }
 
     /**
@@ -182,7 +178,7 @@ public class LookAndFeelController {
                 // synth laf is not loaded (no imports)
                 try {
 
-                    Class<?> slaf = Class.forName("de.javasoft.plaf.synthetica.SyntheticaLookAndFeel");
+                    Class<?> slaf = Class.forName("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 
                     Method method = slaf.getMethod("setLookAndFeel", new Class[] { String.class, boolean.class, boolean.class });
                     method.invoke(null, new Object[] { laf, false, false });

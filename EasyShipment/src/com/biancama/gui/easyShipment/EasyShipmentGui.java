@@ -1,20 +1,5 @@
 package com.biancama.gui.easyShipment;
 
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
-
-import net.miginfocom.swing.MigLayout;
-
 import com.biancama.config.ConfigContainer;
 import com.biancama.controlling.DownloadController;
 import com.biancama.controlling.DownloadWatchDog;
@@ -26,8 +11,8 @@ import com.biancama.gui.UserIO;
 import com.biancama.gui.easyShipment.components.EasyShipmentStatusBar;
 import com.biancama.gui.easyShipment.components.toolbar.MainToolBar;
 import com.biancama.gui.easyShipment.components.toolbar.ToolBar;
-import com.biancama.gui.easyShipment.menus.ShipmentMenu;
 import com.biancama.gui.easyShipment.menus.SaveMenu;
+import com.biancama.gui.easyShipment.menus.ShipmentMenu;
 import com.biancama.gui.easyShipment.menus.actions.ExitAction;
 import com.biancama.gui.easyShipment.menus.actions.RestartAction;
 import com.biancama.gui.easyShipment.plugins.OptionalPluginWrapper;
@@ -57,6 +42,12 @@ import com.biancama.utils.OSDetector;
 import com.biancama.utils.gui.BiancaImage;
 import com.biancama.utils.gui.BiancaTheme;
 import com.biancama.utils.locale.BiancaL;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 public class EasyShipmentGui extends SwingGui {
     private static final long serialVersionUID = 1048792964102830601L;
@@ -89,9 +80,7 @@ public class EasyShipmentGui extends SwingGui {
 
         initLocationAndDimension();
         mainFrame.setVisible(true);
-        if (mainFrame.getRootPane().getUI().toString().contains("SyntheticaRootPaneUI")) {
-            ((de.javasoft.plaf.synthetica.SyntheticaRootPaneUI) mainFrame.getRootPane().getUI()).setMaximizedBounds(mainFrame);
-        }
+
     }
 
     @Override
@@ -117,9 +106,6 @@ public class EasyShipmentGui extends SwingGui {
         mainFrame.setLocation(GUIUtils.getLastLocation(null, null, mainFrame));
         mainFrame.setExtendedState(GUIUtils.getConfig().getIntegerProperty("MAXIMIZED_STATE_OF_" + mainFrame.getName(), JFrame.NORMAL));
 
-        if (mainFrame.getRootPane().getUI().toString().contains("SyntheticaRootPaneUI")) {
-            ((de.javasoft.plaf.synthetica.SyntheticaRootPaneUI) mainFrame.getRootPane().getUI()).setMaximizedBounds(mainFrame);
-        }
 
     }
 
