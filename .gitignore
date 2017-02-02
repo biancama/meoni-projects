@@ -4,7 +4,7 @@
 .project
 .classpath
 .springBeans
-.idea
+.idea/
 target
 bin
 *-secrets.properties
