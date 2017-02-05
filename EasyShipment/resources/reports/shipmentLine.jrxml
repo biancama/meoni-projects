@@ -50,7 +50,7 @@
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{lot}]]></textFieldExpression>
 			</textField>
-			<textField pattern="&#xA4; #,##0.00">
+			<textField pattern="€ #,##0.00">
 				<reportElement uuid="7801a097-9a7b-4b82-ac70-7e2dbfb816e2" x="444" y="1" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
